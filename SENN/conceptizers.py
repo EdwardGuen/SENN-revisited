@@ -64,7 +64,7 @@ class VAEConceptizer(nn.Module):
         else:
             z = mean
         x_decoded = self.decoder_styles(torch.cat([z, one_hot], axis=-1))
-        return z, log_var, x_decoded.view_as(x)
+        return z, mean, log_var, x_decoded.view_as(x)
     
     def forward(self, x):
         mean, log_var = self.encoder_concepts(x)
@@ -76,7 +76,7 @@ class VAEConceptizer(nn.Module):
         else:
             z = mean
         x_decoded = self.decoder_concepts(torch.cat([z, mean_styles], axis=-1))
-        return z, log_var, x_decoded.view_as(x)
+        return z, mean, log_var, x_decoded.view_as(x)
 class InvarConceptizer(SENNConceptizer):
     """Conceptizer for invarsenn
 

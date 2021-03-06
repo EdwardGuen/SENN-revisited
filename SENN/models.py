@@ -54,10 +54,10 @@ class VAESenn(nn.Module):
         self.aggregator = aggregator
     
     def forward(self, x):
-        concepts, log_var, x_recon = self.conceptizer(x)
+        concepts, mean, log_var, x_recon = self.conceptizer(x)
         relevances = self.parametrizer(x)
         pred = self.aggregator(concepts, relevances)
-        return pred, (concepts, relevances), x_recon, log_var 
+        return pred, (concepts, relevances), x_recon, log_var, mean
 class GaussSiamSenn(nn.Module):
     """VSiamSENN 
 

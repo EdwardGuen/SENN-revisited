@@ -325,7 +325,7 @@ class VAETrainerSeperated(Trainer):
                 self.x, self.targets = Variable(x).to(self.device), Variable(targets).to(self.device)
                 ## train style vae
                 self.model.zero_grad()
-                mean, log_var, decoded_styles = self.model.conceptizer.forward_styles(self.x, self.targets)
+                z, mean, log_var, decoded_styles = self.model.conceptizer.forward_styles(self.x, self.targets)
                 recon_loss = self.recon_loss_styles(self.x, decoded_styles)
                 kl_div = self.kl_div(mean, log_var)
                 vae_loss = recon_loss + self.beta_reg_styles * kl_div
@@ -349,9 +349,9 @@ class VAETrainerSeperated(Trainer):
                     self.x, self.targets = Variable(x).to(self.device), Variable(targets).to(self.device)
                     ## train style vae
                     self.model.zero_grad()
-                    pred, (concepts, relevances), x_recon, log_var = self.model(self.x)
+                    pred, (concepts, relevances), x_recon, log_var, mean = self.model(self.x)
                     recon_loss = self.recon_loss_styles(self.x, x_recon)
-                    kl_div = self.kl_div(concepts, log_var)
+                    kl_div = self.kl_div(mean, log_var)
                     vae_loss = recon_loss + kl_div
                     vae_loss.backward()
                     self.opimizer_conceptizer.step()
@@ -371,11 +371,11 @@ class VAETrainerSeperated(Trainer):
                 self.x, self.targets = Variable(x).to(self.device), Variable(targets).to(self.device)
                 self.x.requires_grad_(True)
                 self.model.zero_grad()
-                pred, (concepts, relevances), x_recon, log_var = self.model(self.x)
+                pred, (concepts, relevances), x_recon, log_var, mean = self.model(self.x)
                 classification_loss = self.classification_loss(pred, self.targets)
                 robustness_loss = self.robustness_loss(self.x, pred, concepts, relevances)
                 recon_loss_concepts = self.recon_loss_concepts(self.x.detach(), x_recon)
-                kl_div = self.kl_div(concepts, log_var)
+                kl_div = self.kl_div(mean, log_var)
                 total_loss = classification_loss + self.robustness_reg * robustness_loss + recon_loss_concepts + self.beta_reg_concepts * kl_div
                 total_loss.backward()
                 self.optimizer_senn.step()
