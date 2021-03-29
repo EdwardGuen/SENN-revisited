@@ -18,7 +18,7 @@ class SENNConceptizer(nn.Module):
         x: image (b, n_channels, h, w)
     
     Output:
-        z: concept vector (b, n_concepts)
+        z: vector of concepts (b, n_concepts)
         x_tilde: reconstructed image (b, n_channels, h, w)
     """
     def __init__(self, n_concepts, dataset = "MNIST"):
